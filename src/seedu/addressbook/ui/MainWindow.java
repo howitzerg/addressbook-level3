@@ -1,10 +1,11 @@
 package seedu.addressbook.ui;
 
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import seedu.addressbook.commands.ExitCommand;
 import seedu.addressbook.logic.Logic;
 import seedu.addressbook.commands.CommandResult;
@@ -23,14 +24,14 @@ public class MainWindow {
     private Logic logic;
     private Stoppable mainApp;
 
-    public MainWindow(){
+    public MainWindow() {
     }
 
-    public void setLogic(Logic logic){
+    public void setLogic(Logic logic) {
         this.logic = logic;
     }
 
-    public void setMainApp(Stoppable mainApp){
+    public void setMainApp(Stoppable mainApp) {
         this.mainApp = mainApp;
     }
 
@@ -40,13 +41,12 @@ public class MainWindow {
     @FXML
     private TextField commandInput;
 
-
     @FXML
     void onCommand(ActionEvent event) {
         try {
             String userCommandText = commandInput.getText();
             CommandResult result = logic.execute(userCommandText);
-            if(isExitCommand(result)){
+            if (isExitCommand(result)) {
                 exitApp();
                 return;
             }
@@ -73,7 +73,7 @@ public class MainWindow {
     }
 
     /** Clears the output display area */
-    public void clearOutputConsole(){
+    public void clearOutputConsole() {
         outputConsole.clear();
     }
 
@@ -81,7 +81,7 @@ public class MainWindow {
     public void displayResult(CommandResult result) {
         clearOutputConsole();
         final Optional<List<? extends ReadOnlyPerson>> resultPersons = result.getRelevantPersons();
-        if(resultPersons.isPresent()) {
+        if (resultPersons.isPresent()) {
             display(resultPersons.get());
         }
         display(result.feedbackToUser);
@@ -93,18 +93,35 @@ public class MainWindow {
     }
 
     /**
-     * Displays the list of persons in the output display area, formatted as an indexed list.
-     * Private contact details are hidden.
+     * Displays the list of persons in the output display area, formatted as an
+     * indexed list. Private contact details are hidden.
      */
     private void display(List<? extends ReadOnlyPerson> persons) {
         display(new Formatter().format(persons));
     }
 
     /**
-     * Displays the given messages on the output display area, after formatting appropriately.
+     * Displays the given messages on the output display area, after formatting
+     * appropriately.
      */
     private void display(String... messages) {
         outputConsole.setText(outputConsole.getText() + new Formatter().format(messages));
+    }
+
+    /**
+     * Called when the user clicks on the exit button.
+     * 
+     * @throws Exception
+     */
+    @FXML
+    private void handleExit() throws Exception {
+        try {
+            exitApp();
+            return;
+        } catch (Exception e) {
+            display(e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
 }
